@@ -1,0 +1,171 @@
+<html>
+
+<head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="load()">
+    <div class="container">
+        <div class="chats">
+        </div>
+        <div class="inputField">
+            <input type="text" id="messageBox" placeholder="message here"></input>
+            <button onclick="send()">send</button>
+        </div>
+    </div>
+
+
+    <script>
+        var sock = io('https://dev.botmart.co/chat')
+            //set('log level', 0);
+                    sock.emit('init', 'mechaadiList')
+
+        console.log("ahahsdb")
+        //sock.connect('https://dev.botmart.co/chat')
+        var inputMsg = document.getElementById('messageBox');
+
+
+        document.getElementById('messageBox').addEventListener('keyup', e => {
+            e.preventDefault();
+            if (e.keyCode == 13) {
+                send();
+            }
+        })
+
+        // loading all previus messages on page loaa
+
+        function load() {
+            sock.emit('init', 'mechaadiList')
+            sock.on('prevMessages', (v) => {
+                var msgs = document.createElement('card')
+                for (let i = 0; i < v.length; i++) {
+                    msgs.innerHTML += `<p class="msgCard">${v[i]['msg']}</p>`
+                }
+
+                var win = document.getElementsByClassName('chats')[0]
+                win.appendChild(msgs)
+                win.scrollTop = win.scrollHeight - win.clientHeight
+            })
+            sock.on('onMessage', v=>{
+                console.log(v)
+            })
+            // listening real time events
+            sock.on('messages', (v) => {
+                var msgs = document.createElement('card')
+                for (let i = 0; i < v.length; i++) {
+                    msgs.innerHTML += `<p class="msgCard">${v[i]['msg']}</p>`
+                }
+
+                var win = document.getElementsByClassName('chats')[0]
+                win.appendChild(msgs)
+                win.scrollTop = win.scrollHeight - win.clientHeight
+                inputMsg.value = null
+            })
+        }
+
+
+
+
+
+
+        // handling message sends
+        function send() {
+            sock.emit('init', 'mechaadiList')
+            sock.emit('Message', {
+                'msg': inputMsg.value,
+                'to': "mechaadi",
+                'fr': "edleee",
+                "ch": 'test1'
+            });
+        }
+    </script>
+
+    <style>
+        html,
+        body {
+            background-color: darkslategray;
+            --scrollbarBG: #CFD8DC;
+            --thumbBG: #90A4AE;
+        }
+        
+        .container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .chats {
+            background-color: darkgrey;
+            height: 500px;
+            width: 500px;
+            border-radius: 5px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .inputField {
+            width: 500px;
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .inputField>input {
+            width: 80%;
+            flex: 80%;
+            border: none;
+            border-radius: 4px;
+            padding: 4px;
+            height: 30px;
+        }
+        
+        .inputField>button {
+            flex: 20%;
+            width: 20%;
+        }
+        
+        .msgCard {
+            background-color: darkslategrey;
+            margin: 2px;
+            display: inline;
+            padding: 6px;
+            border-radius: 4px;
+            max-width: 100px;
+            color: white;
+        }
+        
+        card {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+         ::-webkit-scrollbar-track-piece {
+            background-color: #C2D2E4;
+            width: 2px;
+        }
+        
+         ::-webkit-scrollbar-corner {
+            background: none;
+        }
+        
+         ::-webkit-scrollbar-thumb:vertical {
+            height: 30px;
+            background-color: #0A4C95;
+            border-radius: 10px;
+            width: 2px;
+        }
+    </style>
+
+</body>
+
+</html>

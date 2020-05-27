@@ -1,0 +1,7 @@
+flask
+requests
+websocket_client
+redis
+peewee
+flask_socketio
+flask_cors
